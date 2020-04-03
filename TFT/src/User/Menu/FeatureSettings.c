@@ -42,6 +42,7 @@ const LABEL itemMoveSpeed[ITEM_SPEED_NUM] = {
                                               LABEL_FAST_SPEED
                                             };
 
+
 //
 //add key number index of the items
 //
