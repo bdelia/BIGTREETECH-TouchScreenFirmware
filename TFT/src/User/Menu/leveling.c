@@ -76,6 +76,7 @@ LABEL_LEVELING,
 
 void moveToLevelingPoint(u8 point)
 {
+  static const s16 pointPosition[][2] = {
   s16 pointPosition[4][2] = {
     {infoSettings.machine_size_min[X_AXIS] + infoSettings.level_edge, infoSettings.machine_size_min[Y_AXIS] + infoSettings.level_edge},
     {infoSettings.machine_size_max[X_AXIS] - infoSettings.level_edge, infoSettings.machine_size_min[X_AXIS] + infoSettings.level_edge},

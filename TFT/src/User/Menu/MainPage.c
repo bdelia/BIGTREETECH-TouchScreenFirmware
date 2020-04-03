@@ -74,8 +74,7 @@ void classicMenu(void)
   }
   KEY_VALUES key_num=KEY_IDLE;
   GUI_SetBkColor(infoSettings.bg_color);
-
-  menuDrawPage(&classicPageItems);
+  menuDrawPage(&mainPageItems);
 
   while(infoMenu.menu[infoMenu.cur] == classicMenu)
   {

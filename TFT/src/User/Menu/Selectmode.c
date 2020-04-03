@@ -182,13 +182,36 @@ void menuMode(void)
 			#endif
       while(!XPT2046_Read_Pen()){};
 			break;
-    }
+	}
+
+  LCD_EncoderInit();
+}
+
+MKEY_VALUES MKeyGetValue(void)
+{
+  return (MKEY_VALUES)KEY_GetValue(sizeof(rect_of_mode)/sizeof(rect_of_mode[0]), rect_of_mode);
+}
+
+void selectmode(int8_t  nowMode)
+{
+	GUI_SetBkColor(BLACK);
+  GUI_ClearRect(text_startx, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, LCD_WIDTH, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH);
+	GUI_ClearRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH);
+
+  if(nowMode==SERIAL_TSC)
+  {
+    GUI_SetColor(ST7920_FNCOLOR);
+    GUI_DispStringInRect(text_startx, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, LCD_WIDTH, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Touch Mode");
+    GUI_SetColor(lcd_colors[infoSettings.font_color]);
+    GUI_DispStringInRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Marlin Mode");
   }
 
   if(infoSettings.mode != nowMode)
   {
-    infoSettings.mode = nowMode;
-    storePara();
+    GUI_SetColor(ST7920_FNCOLOR);
+    GUI_DispStringInRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx,rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Marlin Mode");
+    GUI_SetColor(lcd_colors[infoSettings.font_color]);
+    GUI_DispStringInRect(text_startx,rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH,LCD_WIDTH,rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Touch Mode");
   }
 
   MODEselect = 0;

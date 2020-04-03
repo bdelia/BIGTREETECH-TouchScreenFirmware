@@ -7,6 +7,13 @@ u8 gc_cur_page = 0;
 
 CUSTOM_GCODES * customcodes = NULL;
 
+u8 enabled_gcodes[CUSTOM_GCODES_COUNT];
+u8 gcode_num;
+u8 gc_page_count;
+u8 gc_cur_page = 0;
+
+CUSTOM_GCODES * customcodes = NULL;
+
 LISTITEMS customItems = {
 // title
 LABEL_CUSTOM,
@@ -195,7 +202,7 @@ void menuMachineSettings(void)
   // icon                       label
   {{ICON_CUSTOM,               LABEL_CUSTOM},
     {ICON_RGB_SETTINGS,         LABEL_RGB_SETTINGS},
-    {ICON_GCODE,                LABEL_TERMINAL},
+    {ICON_GCODE,                LABEL_GCODE},
     {ICON_SHUT_DOWN,            LABEL_SHUT_DOWN},
     {ICON_PARAMETER,            LABEL_PARAMETER_SETTING},
     {ICON_BACKGROUND,           LABEL_BACKGROUND},

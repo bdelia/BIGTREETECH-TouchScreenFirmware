@@ -1,8 +1,9 @@
 #include "flashStore.h"
 #include "STM32_Flash.h"
 
+#define PARA_SIZE 512  //bytes
 #define TSC_SIGN  0x20190827 // DO NOT MODIFY
-#define PARA_SIGN 0x20200405 // (YYYMMDD) If a new setting parameter is added, modify here and initialize the initial value in the "infoSettingsReset()" function
+#define PARA_SIGN 0x20200403 // (YYYMMDD) If a new setting parameter is added, modify here and initialize the initial value in the "infoSettingsReset()" function
 
 extern u32 TSC_Para[7];        //
 extern SETTINGS infoSettings;  //
@@ -59,18 +60,12 @@ bool readStoredPara(void)
   infoSettings.baudrate             = byteToWord(data + (index += 4), 4);
   infoSettings.language             = byteToWord(data + (index += 4), 4);
   infoSettings.mode                 = byteToWord(data + (index += 4), 4);
-  infoSettings.unified_menu         = byteToWord(data + (index += 4), 4);
   infoSettings.rotate_ui            = byteToWord(data + (index += 4), 4);
-
   infoSettings.bg_color             = byteToWord(data + (index += 4), 4);
   infoSettings.font_color           = byteToWord(data + (index += 4), 4);
   infoSettings.title_bg_color       = byteToWord(data + (index += 4), 4);
   infoSettings.reminder_color       = byteToWord(data + (index += 4), 4);
   infoSettings.sd_reminder_color    = byteToWord(data + (index += 4), 4);
-  infoSettings.status_xyz_bg_color  = byteToWord(data + (index += 4), 4);
-  infoSettings.list_border_color    = byteToWord(data + (index += 4), 4);
-  infoSettings.list_button_color    = byteToWord(data + (index += 4), 4);
-
   infoSettings.silent               = byteToWord(data + (index += 4), 4);
   infoSettings.terminalACK          = byteToWord(data + (index += 4), 4);
   infoSettings.move_speed           = byteToWord(data + (index += 4), 4);
@@ -113,7 +108,7 @@ bool readStoredPara(void)
   infoSettings.m27_refresh_time     = byteToWord(data + (index += 4), 4);
   infoSettings.m27_active           = byteToWord(data + (index += 4), 4);
 
-  for(int i = 0; i < HEAT_NUM; i++)
+  for(int i = 0; i < HEATER_NUM; i++)
   {
     infoSettings.max_temp[i]          = byteToWord(data + (index += 4), 4);
   }
@@ -183,18 +178,12 @@ void storePara(void)
   wordToByte(infoSettings.baudrate,                   data + (index += 4));
   wordToByte(infoSettings.language,                   data + (index += 4));
   wordToByte(infoSettings.mode,                       data + (index += 4));
-  wordToByte(infoSettings.unified_menu,               data + (index += 4));
   wordToByte(infoSettings.rotate_ui,                  data + (index += 4));
-
   wordToByte(infoSettings.bg_color,                   data + (index += 4));
   wordToByte(infoSettings.font_color,                 data + (index += 4));
   wordToByte(infoSettings.title_bg_color,             data + (index += 4));
   wordToByte(infoSettings.reminder_color,             data + (index += 4));
   wordToByte(infoSettings.sd_reminder_color,          data + (index += 4));
-  wordToByte(infoSettings.status_xyz_bg_color,        data + (index += 4));
-  wordToByte(infoSettings.list_border_color,          data + (index += 4));
-  wordToByte(infoSettings.list_button_color,          data + (index += 4));
-
   wordToByte(infoSettings.silent,                     data + (index += 4));
   wordToByte(infoSettings.terminalACK,                data + (index += 4));
   wordToByte(infoSettings.move_speed,                 data + (index += 4));
@@ -237,32 +226,32 @@ void storePara(void)
   wordToByte(infoSettings.m27_refresh_time,           data + (index += 4));
   wordToByte(infoSettings.m27_active,                 data + (index += 4));
 
-  for(int i = 0; i < HEAT_NUM; i++)
+  for(int i = 0; i < HEATER_NUM; i++)
   {
-    wordToByte(infoSettings.max_temp[i],              data + (index += 4));
+  wordToByte(infoSettings.max_temp[i],                data + (index += 4));
   }
 
   wordToByte(infoSettings.min_ext_temp,               data + (index += 4));
 
   for(int i = 0; i < MAX_TOOL_COUNT ;i++)
   {
-    wordToByte(infoSettings.fan_max[i],               data + (index += 4));
+  wordToByte(infoSettings.fan_max[i],               data + (index += 4));
   }
 
-  wordToByte(infoSettings.fan_percentage,             data + (index += 4));
+  wordToByte(infoSettings.fan_percentage,              data + (index += 4));
 
   for(int i = 0; i < AXIS_NUM ;i++) //x, y, z
   {
-    wordToByte(infoSettings.invert_axis[i],            data + (index += 4));
-    wordToByte(infoSettings.machine_size_min[i],       data + (index += 4));
-    wordToByte(infoSettings.machine_size_max[i],       data + (index += 4));
-    wordToByte(infoSettings.level_feedrate[i],         data + (index += 4));
+  wordToByte(infoSettings.invert_axis[i],            data + (index += 4));
+  wordToByte(infoSettings.machine_size_min[i],       data + (index += 4));
+  wordToByte(infoSettings.machine_size_max[i],       data + (index += 4));
+  wordToByte(infoSettings.level_feedrate[i],         data + (index += 4));
   }
 
   for(int i = 0; i < SPEED_COUNT ;i++)
   {
-    wordToByte(infoSettings.axis_speed[i],              data + (index += 4));
-    wordToByte(infoSettings.ext_speed[i],               data + (index += 4));
+  wordToByte(infoSettings.axis_speed[i],              data + (index += 4));
+  wordToByte(infoSettings.ext_speed[i],               data + (index += 4));
   }
 
   wordToByte(infoSettings.pause_retract_len,          data + (index += 4));
@@ -275,7 +264,7 @@ void storePara(void)
 
   for(int i = 0; i < TOTAL_AXIS ;i++)
   {
-    wordToByte(infoSettings.pause_feedrate[i],        data + (index += 4)); // X, Y, Z, E
+  wordToByte(infoSettings.pause_feedrate[i],          data + (index += 4)); // X, Y, Z, E
   }
 
   wordToByte(infoSettings.level_edge,                 data + (index += 4));
@@ -284,8 +273,8 @@ void storePara(void)
 
   for (int i = 0; i < PREHEAT_COUNT; i++)
   {
-    wordToByte(infoSettings.preheat_temp[i],          data + (index += 4));
-    wordToByte(infoSettings.preheat_bed[i],           data + (index += 4));
+  wordToByte(infoSettings.preheat_temp[i],            data + (index += 4));
+  wordToByte(infoSettings.preheat_bed[i],             data + (index += 4));
   }
 
 

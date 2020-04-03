@@ -8,7 +8,6 @@
 #define PRINTDEBUG(x)
 #endif
 
-
 const GUI_POINT pointConfigTitle     = {2,2};
 const GUI_RECT  rectTitleline         = {0,               BYTE_HEIGHT+4,      LCD_WIDTH,                BYTE_HEIGHT+6};
 const GUI_RECT  recterror             = {BYTE_WIDTH/2-2,  BYTE_HEIGHT*2+2,    LCD_WIDTH-BYTE_WIDTH/2+2, LCD_HEIGHT-(BYTE_HEIGHT*4)-4};
@@ -21,8 +20,6 @@ u16 foundkeys = 0;
 CONFIGFILE configFile;
 char cur_line[LINE_MAX_CHAR];
 int customcode_index = 0;
-int customcode_good[CUSTOM_GCODES_COUNT];
-bool scheduleRotate = false;
 
 static CUSTOM_GCODES* configCustomGcodes = NULL;
 PRINT_GCODES* configPrintGcodes  = NULL;
@@ -120,11 +117,6 @@ void getConfigFromFile(void)
 
     PRINTDEBUG("\ngcode stored at 1:");
     PRINTDEBUG(configCustomGcodes->gcode[1]);
-    if(scheduleRotate)
-    {
-      LCD_RefreshDirection();
-      TSC_Calibration();
-    }
     storePara();
     saveConfig();
     free(configCustomGcodes);
@@ -151,6 +143,7 @@ static char key_seen(const char *keyStr)
     if (keyStr[i] == 0)
     {
       c_index += i;
+      foundkeys++;
       return true;
     }
   }
@@ -193,7 +186,6 @@ void parseConfigLine(void)
       PRINTDEBUG("\n");
       PRINTDEBUG((char*)config_keywords[i]);
       parseConfigKey(i);
-      foundkeys++;
       return;
     }
   }
@@ -211,7 +203,7 @@ int8_t getOnOff(void)
 
 void saveConfig(void)
 {
-
+  //uint8_t *data_a = (uint8_t *)configCustomGcodes;
   writeConfig((uint8_t *)configCustomGcodes, sizeof(CUSTOM_GCODES), CUSTOM_GCODE_ADDR, CUSTOM_GCODE_MAX_SIZE);
 
   writeConfig((uint8_t *)configPrintGcodes, sizeof(PRINT_GCODES), PRINT_GCODES_ADDR, PRINT_GCODES_MAX_SIZE);
@@ -236,7 +228,6 @@ void writeConfig(uint8_t* dataBytes, uint16_t numBytes, uint32_t addr, uint32_t 
   if (numBytes > maxSize)
     {
       PRINTDEBUG("\nwrite error\n");
-      showError(CSTAT_STORAGE_LOW);
       return;
     }
   int sectorCount =maxSize/W25QXX_SECTOR_SIZE;
@@ -321,9 +312,6 @@ void showError(CONFIG_STATS stat)
   GUI_SetBkColor(BLACK);
   GUI_ClearPrect(&recterrortxt);
   GUI_DrawPrect(&recterror);
-
-  char tempstr[50];
-
   switch (stat)
   {
   case CSTAT_INVALID_VALUE:
@@ -339,13 +327,8 @@ void showError(CONFIG_STATS stat)
   case CSTAT_FILE_NOTOPEN:
     GUI_SetColor(RED);
     ttl = "Error:";
+    char tempstr[50];
     my_sprintf(tempstr, "Unable to open %s", CONFIG_FILE_PATH);
-    txt = tempstr;
-    break;
-  case CSTAT_STORAGE_LOW:
-    GUI_SetColor(RED);
-    ttl = "Write Error:";
-    my_sprintf(tempstr, "Config size is larger than allocated size", CONFIG_FILE_PATH);
     txt = tempstr;
     break;
   case CSTAT_FILE_INVALID:
@@ -368,69 +351,48 @@ void parseConfigKey(u16 index)
 
   switch (index)
   {
-  case C_INDEX_UNIFIEDMENU:
-      infoSettings.unified_menu = getOnOff();
-  break;
-
   case C_INDEX_UART_BAUDRATE:
-    if (inLimit(config_value(),0,ITEM_BAUDRATE_NUM-1))
+    if (inLimit(config_value(),0,ITEM_BAUDRATE_NUM))
       infoSettings.baudrate = item_baudrate[config_value()];
   break;
 
   case C_INDEX_LANGUAGE:
-    if (inLimit(config_value(), 0, LANGUAGE_NUM-1))
+    if (inLimit(config_value(), 0, LANGUAGE_NUM))
       infoSettings.language = config_value();
   break;
 
   case C_INDEX_TITLE_BG:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.title_bg_color = config_value();
   break;
 
-  case C_INDEX_MENU_BG_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+  case C_INDEX_BG_COLOR:
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.bg_color = config_value();
   break;
 
-  case C_INDEX_MENU_FONT_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+  case C_INDEX_FONT_COLOR:
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.font_color = config_value();
   break;
 
   case C_INDEX_NOTIFY_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.reminder_color = config_value();
   break;
 
   case C_INDEX_SD_NOTIFY_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.sd_reminder_color = config_value();
   break;
 
-  case C_INDEX_SS_XYZ_BG_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
-      infoSettings.status_xyz_bg_color = config_value();
-  break;
-
-  case C_INDEX_LIST_BORDER_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
-      infoSettings.list_border_color = config_value();
-  break;
-
-  case C_INDEX_LIST_BUTTON_BG_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
-      infoSettings.list_button_color = config_value();
-  break;
-
   case C_INDEX_MODE:
-    if (inLimit(config_value(), 0, MODE_COUNT-1))
+    if (inLimit(config_value(), 0, MODE_COUNT))
       infoSettings.mode = config_value();
   break;
 
   case C_INDEX_ROTATE_UI:
-      if (infoSettings.rotate_ui != getOnOff())
-          scheduleRotate = true;
-        infoSettings.rotate_ui = getOnOff();
+      infoSettings.rotate_ui = getOnOff();
     break;
 
   case C_INDEX_TERMINAL_ACK:
@@ -458,12 +420,12 @@ void parseConfigKey(u16 index)
   //---------------------------------------------------------Marlin Mode Settings (Only for TFT35_V3.0/TFT24_V1.1/TFT28V3.0)
 #ifdef ST7920_SPI
   case C_INDEX_MARLIN_BG_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.marlin_mode_bg_color = config_value();
   break;
 
   case C_INDEX_MARLIN_FONT_COLOR:
-    if (inLimit(config_value(), 0, LCD_COLOR_COUNT-1))
+    if (inLimit(config_value(), 0, LCD_COLOR_COUNT))
       infoSettings.marlin_mode_font_color = config_value();
   break;
 
@@ -475,9 +437,8 @@ void parseConfigKey(u16 index)
     {
       char * pchr;
       pchr = strrchr(cur_line,':') + 1;
-      int utf8len = getUTF8Length((u8*)pchr);
-      int bytelen = strlen(pchr) + 1;
-      if (inLimit(utf8len,NAME_MIN_LENGTH,MAX_STRING_LENGTH) && inLimit(bytelen,NAME_MIN_LENGTH,MAX_GCODE_LENGTH))
+      int len = strlen(pchr);
+      if ( inLimit(len,3,MAX_STRING_LENGTH))
         strcpy(configStringsStore->marlin_title, pchr);
     }
   break;
@@ -723,12 +684,12 @@ void parseConfigKey(u16 index)
   case C_INDEX_PREHEAT_NAME_1:
   case C_INDEX_PREHEAT_NAME_2:
   case C_INDEX_PREHEAT_NAME_3:
+  case C_INDEX_PREHEAT_NAME_4:
   {
     char pchr[LINE_MAX_CHAR];
     strcpy(pchr, strrchr(cur_line, ':') + 1);
-      int utf8len = getUTF8Length((u8*)pchr);
-      int bytelen = strlen(pchr) + 1;
-      if (inLimit(utf8len,NAME_MIN_LENGTH,MAX_STRING_LENGTH) && inLimit(bytelen,NAME_MIN_LENGTH,MAX_GCODE_LENGTH))
+    int len = strlen(pchr) + 1;
+    if (inLimit(len, NAME_MIN_LENGTH, MAX_LABEL_LENGTH))
       strcpy(configStringsStore->preheat_name[index - C_INDEX_PREHEAT_NAME_1], pchr);
   }
 
@@ -737,6 +698,7 @@ void parseConfigKey(u16 index)
   case C_INDEX_PREHEAT_TEMP_1:
   case C_INDEX_PREHEAT_TEMP_2:
   case C_INDEX_PREHEAT_TEMP_3:
+  case C_INDEX_PREHEAT_TEMP_4:
     {
         int val_index = index - C_INDEX_PREHEAT_TEMP_1;
       if (key_seen("B:"))
@@ -827,24 +789,24 @@ void parseConfigKey(u16 index)
     break;
 #endif
 
-#ifdef LED_COLOR_PIN
+#ifdef LED_color_PIN
   case C_INDEX_KNOB_COLOR:
-    if (inLimit(config_value(), 0, LED_color_NUM-1))
+    if (inLimit(config_value(), 0, LED_color_NUM))
       infoSettings.knob_led_color = config_value();
   break;
 #endif
 
-#ifdef LCD_LED_PWM_CHANNEL
+#ifdef LCD_LED_PIN
   case C_INDEX_BRIGHTNESS:
-    if (inLimit(config_value(), 0, ITEM_BRIGHTNESS_NUM-1))
+    if (inLimit(config_value(), 0, 100))
       infoSettings.lcd_brightness = config_value();
   break;
   case C_INDEX_BRIGHTNESS_IDLE:
-    if (inLimit(config_value(), 0, ITEM_BRIGHTNESS_NUM-1))
+    if (inLimit(config_value(), 0, 100))
       infoSettings.lcd_idle_brightness = config_value();
   break;
   case C_INDEX_BRIGHTNESS_IDLE_DELAY:
-    if (inLimit(config_value(), 0, ITEM_SECONDS_NUM-1))
+    if (inLimit(config_value(), 0, 100))
       infoSettings.lcd_idle_timer = config_value();
   break;
 #endif
@@ -867,17 +829,13 @@ void parseConfigKey(u16 index)
     {
       char pchr[LINE_MAX_CHAR];
       strcpy(pchr,strrchr(cur_line,':') + 1);
-      int utf8len = getUTF8Length((u8*)pchr);
-      int bytelen = strlen(pchr) + 1;
-      if (inLimit(utf8len,NAME_MIN_LENGTH,MAX_GCODE_NAME_LENGTH) && inLimit(bytelen,NAME_MIN_LENGTH,MAX_GCODE_LENGTH))
+      int len = strlen(pchr)+1;
+      if (inLimit(len,NAME_MIN_LENGTH,MAX_STRING_LENGTH))
       {
-        strcpy(configCustomGcodes->name[customcode_index++], pchr);
-        customcode_good[index - C_INDEX_CUSTOM_LABEL_1] = 1; //set name was found ok
+        strcpy(configCustomGcodes->name[customcode_index], pchr);
+        customcode_index++;
       }
-      else
-      {
-        customcode_good[index - C_INDEX_CUSTOM_LABEL_1] = 0;//set name was not ok
-      }
+
   break;
     }
   case C_INDEX_CUSTOM_GCODE_1:
@@ -896,18 +854,14 @@ void parseConfigKey(u16 index)
   case C_INDEX_CUSTOM_GCODE_14:
   case C_INDEX_CUSTOM_GCODE_15:
     {
-      int fileindex = index - C_INDEX_CUSTOM_GCODE_1; //actual gcode index in config file
       char pchr[LINE_MAX_CHAR];
       strcpy(pchr,strrchr(cur_line,':') + 1);
       int len = strlen(pchr) + 1;
-      if (inLimit(len,GCODE_MIN_LENGTH,MAX_GCODE_LENGTH) && (customcode_good[fileindex] == 1)) //check if gcode length is ok and the name was ok
-        {
-          strcpy(configCustomGcodes->gcode[customcode_index-1], pchr);
-        }
-      else if (customcode_good[fileindex] == 1) //if name was ok but gcode is not ok then reduce count
-        {
-          customcode_index--;
-        }
+      if (inLimit(len,GCODE_MIN_LENGTH,MAX_GCODE_LENGTH))
+      {
+        strcpy(configCustomGcodes->gcode[customcode_index], pchr);
+      }
+
   break;
     }
   //---------------------------------------------------------Start, End & Cancel G-codes
