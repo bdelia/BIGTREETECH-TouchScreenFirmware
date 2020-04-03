@@ -203,7 +203,6 @@ int8_t getOnOff(void)
 
 void saveConfig(void)
 {
-  //uint8_t *data_a = (uint8_t *)configCustomGcodes;
   writeConfig((uint8_t *)configCustomGcodes, sizeof(CUSTOM_GCODES), CUSTOM_GCODE_ADDR, CUSTOM_GCODE_MAX_SIZE);
 
   writeConfig((uint8_t *)configPrintGcodes, sizeof(PRINT_GCODES), PRINT_GCODES_ADDR, PRINT_GCODES_MAX_SIZE);
