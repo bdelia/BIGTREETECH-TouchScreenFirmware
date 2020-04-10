@@ -47,7 +47,7 @@ const LABEL itemMoveSpeed[ITEM_SPEED_NUM] = {
 //
 typedef enum
 {
-  SKEY_HIDEACK = 0,
+  SKEY_ACK = 0,
   SKEY_INVERT_X,
   SKEY_INVERT_Y,
   SKEY_INVERT_Z,
@@ -145,7 +145,7 @@ void updateFeatureSettings(uint8_t key_val)
   uint8_t item_index = fe_cur_page*LISTITEM_PER_PAGE+ key_val;
   switch (item_index)
   {
-    case SKEY_HIDEACK:
+    case SKEY_ACK:
       infoSettings.terminalACK = (infoSettings.terminalACK + 1) % TOGGLE_NUM;
       settingPage[item_index].icon = toggleitem[infoSettings.terminalACK];
       featureSettingsItems.items[key_val] = settingPage[item_index];
@@ -309,7 +309,7 @@ void loadFeatureSettings(){
     uint8_t item_index = fe_cur_page*LISTITEM_PER_PAGE + i;
     switch (item_index)
     {
-      case SKEY_HIDEACK:
+      case SKEY_ACK:
         settingPage[item_index].icon = toggleitem[infoSettings.terminalACK];
         featureSettingsItems.items[i] = settingPage[item_index];
         break;

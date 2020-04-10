@@ -195,7 +195,7 @@ void menuMachineSettings(void)
   // icon                       label
   {{ICON_CUSTOM,               LABEL_CUSTOM},
     {ICON_RGB_SETTINGS,         LABEL_RGB_SETTINGS},
-    {ICON_GCODE,                LABEL_GCODE},
+    {ICON_GCODE,                LABEL_TERMINAL},
     {ICON_SHUT_DOWN,            LABEL_SHUT_DOWN},
     {ICON_PARAMETER,            LABEL_PARAMETER_SETTING},
     {ICON_BACKGROUND,           LABEL_BACKGROUND},
