@@ -431,9 +431,17 @@ if(infoSettings.onboard_sd_support == 1 && infoMachineSettings.autoReportSDStatu
   USBH_Process(&USB_OTG_Core, &USB_Host);
 #endif
 
+
 #if LCD_ENCODER_SUPPORT
+  loopCheckEncoder();
+  if(infoMenu.menu[infoMenu.cur] != menuST7920)
+    {
+      loopCheckEncoderSteps(); //check change in encoder steps
+    }
+#endif
+
+#ifdef ST7920_SPI
   loopCheckMode();
-  LCD_loopCheckEncoder();
 #endif
 
 #ifdef FIL_RUNOUT_PIN
