@@ -34,6 +34,9 @@ void touchEncoderInit(void)
   GUI_RestoreColorDefault();
   GUI_ClearRect(0, SIMULATOR_YEND, LCD_WIDTH, LCD_HEIGHT);
   GUI_DrawRect(0, SIMULATOR_YEND, LCD_WIDTH, SIMULATOR_YEND+2);
+  ICON_CustomReadDisplay(encoderRect[0].x0,encoderRect[0].y0, E_ICON_WIDTH, E_ICON_WIDTH, ICON_ADDR(ICON_ENC_LEFT));
+  ICON_CustomReadDisplay(encoderRect[1].x0,encoderRect[1].y0, E_ICON_WIDTH, E_ICON_WIDTH, ICON_ADDR(ICON_ENC_SEL));
+  ICON_CustomReadDisplay(encoderRect[2].x0,encoderRect[2].y0, E_ICON_WIDTH, E_ICON_WIDTH, ICON_ADDR(ICON_ENC_RIGHT));
   sendPulse(ENC_LEFT);
   sendPulse(ENC_SEL);
 }
@@ -52,10 +55,10 @@ void checkTouchButton(void)
 
   u16 tx, ty;
 
-  for (int i = 0; i < 3; i++)
-  {
-    GUI_DrawPrect(&encoderRect[i]);
-  }
+  // for (int i = 0; i < 3; i++)
+  // {
+  //   GUI_DrawPrect(&encoderRect[i]);
+  // }
   if (!XPT2046_Read_Pen())
   {
     nowtime = OS_GetTimeMs();
