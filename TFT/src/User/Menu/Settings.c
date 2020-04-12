@@ -86,7 +86,7 @@ void infoSettingsReset(void)
 
   for(int i = 0; i < MAX_TOOL_COUNT ;i++)
   {
-    infoSettings.fan_max[i]           = default_max_temp[i];
+    infoSettings.fan_max[i]           = default_max_fanPWM[i];
   }
 
   infoSettings.fan_percentage         = 1;
