@@ -43,9 +43,9 @@
  * SERIAL_PORT: communicating with host(Marlin, smoothieware, etc...)
  * SERIAL_PORT_X: communicating with other controller(Octoprint, ESP3D, other UART Touch Screen, etc...)
  */
-#define SERIAL_PORT   _USART1  //default usart port
+#define SERIAL_PORT   _USART3  //default usart port
 #define SERIAL_PORT_2 _USART2
-#define SERIAL_PORT_3 _USART3
+//#define SERIAL_PORT_3 _USART3
 //#define SERIAL_PORT_4 _UART4
 
 /*
@@ -79,15 +79,34 @@
 #define W25Qxx_CS_PIN PA4
 
 // ST7920 Simulator SPI pins
-//#define ST7920_SPI    _SPI2
+#define ST7920_SPI    _SPI2
 
 // Buzzer support
 #define BUZZER_PIN    PB2
 
 // LCD Encoder support
-//#define LCD_ENCA_PIN  PB0
-//#define LCD_ENCB_PIN  PB1
-//#define LCD_BTN_PIN   PB2
+#define LCD_ENCA_PIN  PA0
+#define LCD_ENCB_PIN  PA1
+#define LCD_BTN_PIN   PE6
+
+// Touch Encoder Support
+#define ST7920_ONSCREEN_CONTROLS
+
+#ifdef ST7920_ONSCREEN_CONTROLS
+    #define TOUCH_ENCA_PIN  PA0
+    #define TOUCH_ENCB_PIN  PA1
+    #define TOUCH_BTN_PIN   PE6
+
+    #ifdef LCD_ENCA_PIN
+        #undef LCD_ENCA_PIN
+    #endif
+    #ifdef LCD_ENCB_PIN
+        #undef LCD_ENCB_PIN
+    #endif
+    #ifdef LCD_BTN_PIN
+        #undef LCD_BTN_PIN
+    #endif
+#endif
 
 // U disk support
 //#define U_DISK_SUPPORT

@@ -66,16 +66,16 @@ void selectmode(int8_t  nowMode)
 
   if(nowMode==SERIAL_TSC)
   {
-		GUI_SetColor(BACKGROUND_COLOR);
+		GUI_SetColor(lcd_colors[infoSettings.bg_color]);
 		GUI_DrawRect(rect_of_mode[0].x0 - border_off, rect_of_mode[0].y0 - border_off,rect_of_mode[0].x1 + border_off, rect_of_mode[0].y1 + border_off);
-		GUI_SetColor(YELLOW);
+		GUI_SetColor(lcd_colors[LCD_YELLOW]);
 		GUI_DrawRect(rect_of_mode[1].x0 - border_off, rect_of_mode[1].y0 - border_off,rect_of_mode[1].x1 + border_off, rect_of_mode[1].y1 + border_off);
   }
   else
   {
-		GUI_SetColor(BACKGROUND_COLOR);
+		GUI_SetColor(lcd_colors[infoSettings.bg_color]);
 		GUI_DrawRect(rect_of_mode[1].x0 - border_off, rect_of_mode[1].y0 - border_off,rect_of_mode[1].x1 + border_off, rect_of_mode[1].y1 + border_off);
-		GUI_SetColor(YELLOW);
+		GUI_SetColor(lcd_colors[LCD_YELLOW]);
 		GUI_DrawRect(rect_of_mode[0].x0 - border_off, rect_of_mode[0].y0 - border_off,rect_of_mode[0].x1 + border_off, rect_of_mode[0].y1 + border_off);
 
   }
@@ -99,14 +99,14 @@ void menuMode(void)
 {
   #if defined(ST7920_BANNER_TEXT)
     RADIO modeRadio = {
-      {(u8*)"Serial Touch Screen", (u8*)ST7920_BANNER_TEXT, (u8*)"LCD2004 Simulator"},
+      {(u8*)"Serial Touch Screen", (u8*)ST7920_BANNER_TEXT, (u8*)"LCD2004 Emulator"},
       SIMULATOR_XSTART, SIMULATOR_YSTART,
       BYTE_HEIGHT*2, 2,
       0
       };
   #else
     RADIO modeRadio = {
-      {(u8*)"Serial Touch Screen", (u8*)"12864 Simulator", (u8*)"LCD2004 Simulator"},
+      {(u8*)"Serial Touch Screen", (u8*)"12864 Emulator", (u8*)"LCD2004 Emulator"},
       SIMULATOR_XSTART, SIMULATOR_YSTART,
       BYTE_HEIGHT*2, 2,
       0
@@ -120,7 +120,7 @@ void menuMode(void)
   int16_t /*nowEncoder =*/ encoderPosition = 0;
   int8_t  nowMode = modeRadio.select = infoSettings.mode;
 
-  GUI_Clear(BACKGROUND_COLOR);
+  GUI_Clear(lcd_colors[infoSettings.bg_color]);
   //RADIO_Create(&modeRadio);
   #ifndef CLEAN_MODE_SWITCHING_SUPPORT
     Serial_ReSourceDeInit();
@@ -182,36 +182,13 @@ void menuMode(void)
 			#endif
       while(!XPT2046_Read_Pen()){};
 			break;
-	}
-
-  LCD_EncoderInit();
-}
-
-MKEY_VALUES MKeyGetValue(void)
-{
-  return (MKEY_VALUES)KEY_GetValue(sizeof(rect_of_mode)/sizeof(rect_of_mode[0]), rect_of_mode);
-}
-
-void selectmode(int8_t  nowMode)
-{
-	GUI_SetBkColor(BLACK);
-  GUI_ClearRect(text_startx, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, LCD_WIDTH, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH);
-	GUI_ClearRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH);
-
-  if(nowMode==SERIAL_TSC)
-  {
-    GUI_SetColor(ST7920_FNCOLOR);
-    GUI_DispStringInRect(text_startx, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, LCD_WIDTH, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Touch Mode");
-    GUI_SetColor(lcd_colors[infoSettings.font_color]);
-    GUI_DispStringInRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx, rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Marlin Mode");
+    }
   }
 
   if(infoSettings.mode != nowMode)
   {
-    GUI_SetColor(ST7920_FNCOLOR);
-    GUI_DispStringInRect(0, rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH, text_startx,rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Marlin Mode");
-    GUI_SetColor(lcd_colors[infoSettings.font_color]);
-    GUI_DispStringInRect(text_startx,rect_of_mode[1].y0-BYTE_HEIGHT+ICON_WIDTH+BYTE_WIDTH,LCD_WIDTH,rect_of_mode[1].y0+ICON_WIDTH+BYTE_WIDTH,(uint8_t *)"Touch Mode");
+    infoSettings.mode = nowMode;
+    storePara();
   }
 
   MODEselect = 0;
