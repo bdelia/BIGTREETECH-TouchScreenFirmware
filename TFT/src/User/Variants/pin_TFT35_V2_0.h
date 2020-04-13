@@ -43,7 +43,7 @@
  * SERIAL_PORT: communicating with host(Marlin, smoothieware, etc...)
  * SERIAL_PORT_X: communicating with other controller(Octoprint, ESP3D, other UART Touch Screen, etc...)
  */
-#define SERIAL_PORT   _USART3  //default usart port
+#define SERIAL_PORT   _USART1  //default usart port
 #define SERIAL_PORT_2 _USART2
 //#define SERIAL_PORT_3 _USART3
 //#define SERIAL_PORT_4 _UART4
