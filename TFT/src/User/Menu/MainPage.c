@@ -102,11 +102,3 @@ void classicMenu(void)
     loopProcess();
   }
 }
-
-void menuMain(void)
-{
-  if(infoSettings.unified_menu == 1)
-    unifiedMenu();
-  else
-    classicMenu();
-}
