@@ -126,7 +126,7 @@ void drawTemperature(void)
     my_sprintf(tempstr, "%d", fs);
   }
 
-  GUI_DispStringInPrect(&rectB[2], (u8 *)tempstr);                        //Fan value
+  GUI_DispStringInPrect(&rectB[2], (u8 *)tempstr);                                //Fan value
 
   GUI_SetColor(HEADING_COLOR);
   menuDrawIconOnly(&SpeedItems[current_speedID],3);                               //Speed / flow icon

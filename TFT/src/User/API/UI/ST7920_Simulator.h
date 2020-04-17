@@ -3,7 +3,6 @@
 
 #include "stdint.h"
 #include "../../Configuration.h"
-#include "GUI.h"
 #include "TouchEncoder.h"
 
 // User-defined colors for 12864 mode from Configuration.h

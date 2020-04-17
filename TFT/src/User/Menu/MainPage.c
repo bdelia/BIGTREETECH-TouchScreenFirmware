@@ -74,7 +74,8 @@ void classicMenu(void)
   }
   KEY_VALUES key_num=KEY_IDLE;
   GUI_SetBkColor(infoSettings.bg_color);
-  menuDrawPage(&mainPageItems);
+
+  menuDrawPage(&classicPageItems);
 
   while(infoMenu.menu[infoMenu.cur] == classicMenu)
   {
@@ -100,12 +101,4 @@ void classicMenu(void)
     }
     loopProcess();
   }
-}
-
-void menuMain(void)
-{
-  if(infoSettings.unified_menu == 1)
-    unifiedMenu();
-  else
-    classicMenu();
 }
